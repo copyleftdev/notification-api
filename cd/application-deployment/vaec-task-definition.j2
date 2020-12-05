@@ -1,0 +1,165 @@
+{
+    "family": "{{ environment_prefix }}-{{ task_name }}-task",
+    "executionRoleArn": "arn:aws-us-gov:iam::171875617347:role/project/project-{{ environment_prefix }}-notification-api-task-execution-role",
+    "taskRoleArn": "arn:aws-us-gov:iam::171875617347:role/project/project-{{ environment_prefix }}-notification-api-task-role",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [{
+            "name": "{{ task_name }}",
+            "image": "{{ image }}",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "{{ environment_prefix }}-notification-api-log-group",
+                    "awslogs-region": "us-gov-west-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "portMappings": [{
+                "containerPort": 6011,
+                "hostPort": 6011
+            }],
+            "environment": [
+                {
+                    "name": "NOTIFY_ENVIRONMENT",
+                    "value": "{{ environment }}"
+                },
+                {
+                    "name": "FLASK_APP",
+                    "value": "{{ flask_app }}"
+                },
+                {
+                    "name": "NOTIFICATION_QUEUE_PREFIX",
+                    "value": "{{ environment_prefix }}-notification-"
+                },
+                {
+                    "name": "AWS_REGION",
+                    "value": "us-gov-west-1"
+                },
+                {
+                    "name": "STATSD_HOST",
+                    "value": "localhost"
+                },
+                {
+                    "name": "GRANICUS_URL",
+                    "value": "{{ granicus_url }}"
+                },
+                {
+                    "name": "NOTIFY_EMAIL_FROM",
+                    "value": "{{ email_from }}"
+                },
+                {
+                    "name": "ACCEPT_RECIPIENT_IDENTIFIERS_ENABLED",
+                    "value": "{{ accept_recipient_identifiers_enabled | default('False') }}"
+                },
+                {
+                    "name": "GOOGLE_ANALYTICS_ENABLED",
+                    "value": "{{ google_analytics_enabled | default('False') }}"
+                },
+                {
+                    "name": "GOOGLE_ANALYTICS_TID",
+                    "value": "{{ google_analytics_tid | default('') }}"
+                }
+            ],
+            "secrets": [
+                {
+                    "name": "TWILIO_ACCOUNT_SID",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/twilio/account-sid"
+                },
+                {
+                    "name": "TWILIO_AUTH_TOKEN",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/twilio/auth-token"
+                },
+                {
+                    "name": "TWILIO_FROM_NUMBER",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/twilio/from-number"
+                },
+                {
+                    "name": "GRANICUS_TOKEN",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/granicus/token"
+                },
+                {
+                    "name": "SQLALCHEMY_DATABASE_URI",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/database/uri"
+                },
+                {
+                    "name": "API_HOST_NAME",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/api-host-name"
+                },
+                {
+                    "name": "ADMIN_CLIENT_SECRET",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/admin-client-secret"
+                },
+                {
+                    "name": "SECRET_KEY",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/secret-key"
+                },
+                {
+                    "name": "DANGEROUS_SALT",
+                    "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/dangerous-salt"
+                }
+            ]{% if command is defined %},
+            "command": ["sh", "-c", "{{ command }}"]
+            {% endif %}
+        },
+        {
+            "name": "datadog-agent",
+            "image": "171875617347.dkr.ecr.us-gov-west-1.amazonaws.com/datadog/agent:latest",
+            "essential": true,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "{{ environment_prefix }}-notification-api-datadog-log-group",
+                    "awslogs-region": "us-gov-west-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "portMappings": [{
+                "containerPort": 8125,
+                "hostPort": 8125,
+                "protocol": "udp"
+            }],
+            "environment": [{
+                "name": "ECS_FARGATE",
+                "value": "true"
+            }],
+            "secrets": [{
+                "name": "DD_API_KEY",
+                "valueFrom": "arn:aws-us-gov:ssm:us-gov-west-1:171875617347:parameter/{{ environment_prefix }}/notification-api/datadog/apikey"
+            }]
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024",
+    "tags": [{
+            "key": "Stack",
+            "value": "application-deployment"
+        },
+        {
+            "key": "Environment",
+            "value": "{{ environment_prefix }}"
+        },
+        {
+            "key": "Team",
+            "value": "vanotify"
+        },
+        {
+            "key": "ManagedBy",
+            "value": "CI"
+        },
+        {
+            "key": "VAECID",
+            "value": "AWG20200714002"
+        },
+        {
+            "key": "ProjectName",
+            "value": "VA Notify"
+        },
+        {
+            "key": "ProjectShort",
+            "value": "NOTIFY"
+        }
+    ]
+}

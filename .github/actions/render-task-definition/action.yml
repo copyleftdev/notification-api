@@ -1,0 +1,41 @@
+name: 'Render task definition'
+description: 'Use parameters specifying an image, environment, and task to populate the task definition'
+inputs:
+  image:
+    description: 'The URI of the container image to insert into the ECS task definition'
+    required: true
+  env-parameters:
+    description: 'The path to the yaml file that specifies per-environment parameters'
+    required: true
+  task-parameters:
+    description: 'The path to the yaml file that specifies per-image parameters'
+    required: true
+  task-definition-template:
+    description: 'The path to the Jinja2 template for the task definition'
+    required: true
+outputs:
+  task-definition:
+    description: 'The path to the rendered task definition file'
+    value: ${{ steps.render-task-definition.outputs.task-definition }}
+runs:
+  using: "composite"
+  steps:
+    - run: echo Hello ${{ inputs.who-to-greet }}.
+      shell: bash
+    - id: random-number-generator
+      run: echo "::set-output name=random-id::$(echo $RANDOM)"
+      shell: bash
+    - id: render-task-definition
+    - run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install j2cli
+
+        ENV_NAME=$(basename ${{ inputs.env-parameters }} .yaml)
+        TASK_NAME=$(basename ${{ inputs.task-parameters }} .yaml)
+        TASK_DEFINITION_OUTPUT_FILE_NAME=task-definition-$ENV_NAME-$TASK_NAME.json
+
+        printf "\nimage: ${{ inputs.image }}" | cat ${{ inputs.env-parameters }} ${{ inputs.task-parameters }} - | j2 -f yaml ${{ inputs.task-definition-template }} > $TASK_DEFINITION_OUTPUT_FILE_NAME
+
+        echo "Writing output to $TASK_DEFINITION_OUTPUT_FILE_NAME"
+        echo "::set-output name=task-definition::$TASK_DEFINITION_OUTPUT_FILE_NAME"

@@ -1,0 +1,3 @@
+task_name: "notification-api-db-migrations"
+flask_app: "application.py"
+command: "flask db upgrade"
