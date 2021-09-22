@@ -176,8 +176,8 @@ def send_notification_to_queue(notification, research_mode, queue=None, recipien
 
 
 def _get_delivery_task(notification, research_mode=False, queue=None):
-    if research_mode or notification.key_type == KEY_TYPE_TEST:
-        queue = QueueNames.RESEARCH_MODE
+    # if research_mode or notification.key_type == KEY_TYPE_TEST:
+    #     queue = QueueNames.RESEARCH_MODE
 
     if notification.notification_type == SMS_TYPE:
         if not queue:
