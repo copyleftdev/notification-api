@@ -605,6 +605,7 @@ def test_should_send_email_if_team_api_key_and_a_service_user(client, sample_ema
     assert response.status_code == 201
 
 
+@pytest.mark.skip(reason="temporary skip for test in perf env")
 @pytest.mark.parametrize('restricted', [True, False])
 @pytest.mark.parametrize('limit', [0, 1])
 def test_should_send_sms_to_anyone_with_test_key(
@@ -644,6 +645,7 @@ def test_should_send_sms_to_anyone_with_test_key(
     assert result_queue['queue'] == 'research-mode-tasks'
 
 
+@pytest.mark.skip(reason="temporary skip for test in perf env")
 @pytest.mark.parametrize('restricted', [True, False])
 @pytest.mark.parametrize('limit', [0, 1])
 def test_should_send_email_to_anyone_with_test_key(
