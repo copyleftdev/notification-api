@@ -31,22 +31,6 @@ class SendEmail(HttpUser):
         )
         return resp["Parameter"]["Value"]
 
-    # @task
-    # def send_email(self):
-    #     headers = {
-    #         'Authorization': f"Bearer {self._get_jwt().decode('utf-8')}"
-    #     }
-    #     payload = {
-    #         'template_id': self.template_id,
-    #         'email_address': 'test-email@not-a-real-email.com'
-    #     }
-    #     self.client.post(
-    #         '/v2/notifications/email',
-    #         json=payload,
-    #         headers=headers,
-    #         verify=os.getenv('REQUESTS_CA_BUNDLE')
-        # )
-
     def _get_jwt(self) -> bytes:
         header = {'typ': 'JWT', 'alg': 'HS256'}
         combo = {}
