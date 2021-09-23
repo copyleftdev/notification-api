@@ -12,6 +12,7 @@ class SendEmail(HttpUser):
         self.short_env = urlparse(self.environment.host).hostname.split('.')[0]  # looking for "dev" or "staging"
         self.template_id = self.read_configuration('template_id')
         self.service_id = self.read_configuration('service_id')
+        self.sms_sender_id = "583c611a-3326-4f64-9da0-3cdf4df27487"
         self.api_key = self.read_configuration('api_key')
 
     def read_configuration(self, key: str) -> str:
@@ -30,21 +31,21 @@ class SendEmail(HttpUser):
         )
         return resp["Parameter"]["Value"]
 
-    @task
-    def send_email(self):
-        headers = {
-            'Authorization': f"Bearer {self._get_jwt().decode('utf-8')}"
-        }
-        payload = {
-            'template_id': self.template_id,
-            'email_address': 'test-email@not-a-real-email.com'
-        }
-        self.client.post(
-            '/v2/notifications/email',
-            json=payload,
-            headers=headers,
-            verify=os.getenv('REQUESTS_CA_BUNDLE')
-        )
+    # @task
+    # def send_email(self):
+    #     headers = {
+    #         'Authorization': f"Bearer {self._get_jwt().decode('utf-8')}"
+    #     }
+    #     payload = {
+    #         'template_id': self.template_id,
+    #         'email_address': 'test-email@not-a-real-email.com'
+    #     }
+    #     self.client.post(
+    #         '/v2/notifications/email',
+    #         json=payload,
+    #         headers=headers,
+    #         verify=os.getenv('REQUESTS_CA_BUNDLE')
+        # )
 
     def _get_jwt(self) -> bytes:
         header = {'typ': 'JWT', 'alg': 'HS256'}
@@ -60,3 +61,20 @@ class SendEmail(HttpUser):
         combo.update(header)
         encoded_jwt = jwt.encode(combo, self.api_key, algorithm='HS256')
         return encoded_jwt
+
+    @task
+    def send_sms(self):
+        headers = {
+            'Authorization': f"Bearer {self._get_jwt().decode('utf-8')}"
+        }
+        payload = {
+            'template_id': self.template_id,
+            'sms_sender_id': self.sms_sender_id,
+            'phone_number': '+16502532222'
+        }
+        self.client.post(
+            '/v2/notifications/sms',
+            json=payload,
+            headers=headers,
+            verify=os.getenv('REQUESTS_CA_BUNDLE')
+        )
