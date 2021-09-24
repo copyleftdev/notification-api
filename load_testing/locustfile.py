@@ -68,7 +68,7 @@ class SendEmail(HttpUser):
             'Authorization': f"Bearer {self._get_jwt().decode('utf-8')}"
         }
         payload = {
-            'template_id': self.template_id,
+            'template_id': self.sms_template_id,
             'sms_sender_id': self.sms_sender_id,
             'phone_number': '+16502532222'
         }
