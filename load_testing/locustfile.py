@@ -12,7 +12,7 @@ class SendEmail(HttpUser):
         self.short_env = urlparse(self.environment.host).hostname.split('.')[0]  # looking for "dev" or "staging"
         self.template_id = self.read_configuration('template_id')
         self.service_id = self.read_configuration('service_id')
-        self.sms_sender_id = "583c611a-3326-4f64-9da0-3cdf4df27487"
+        self.sms_sender_id = "04aef330-7169-4d03-bc48-9eb793846844"
         self.api_key = self.read_configuration('api_key')
 
     def read_configuration(self, key: str) -> str:
