@@ -140,7 +140,7 @@ def persist_notification(
 
 def send_notification_to_queue(notification, research_mode, queue=None, recipient_id_type: str = None):
     deliver_task, queue = _get_delivery_task(notification, research_mode, queue)
-
+    current_app.logger.info(f'Queue used for notification {notification.id} is {queue}')
     template = notification.template
 
     if template:
