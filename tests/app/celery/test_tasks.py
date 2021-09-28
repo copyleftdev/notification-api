@@ -482,6 +482,7 @@ def test_should_send_template_to_correct_sms_task_and_persist(sample_template_wi
     )
 
 
+@pytest.mark.skip(reason='skipping for now while we load test')
 def test_should_put_save_sms_task_in_research_mode_queue_if_research_mode_service(notify_db, notify_db_session, mocker):
     service = create_service(research_mode=True, )
 
