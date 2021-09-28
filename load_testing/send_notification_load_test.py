@@ -2,18 +2,17 @@ import time
 import os
 import jwt
 import boto3
-from locust import HttpUser, task
+from locust import HttpUser
 from urllib.parse import urlparse
 
 
-class SendEmail(HttpUser):
-
+class SendNotification(HttpUser):
     def on_start(self):
         self.short_env = urlparse(self.environment.host).hostname.split('.')[0]  # looking for "dev" or "staging"
-        self.template_id = self.read_configuration('template_id')
+        self.email_template_id = self.read_configuration('email_template_id')
         self.sms_template_id = self.read_configuration('sms_template_id')
         self.service_id = self.read_configuration('service_id')
-        self.sms_sender_id = "04aef330-7169-4d03-bc48-9eb793846844"
+        self.sms_sender_id = self.read_configuration('sms_sender_id')
         self.api_key = self.read_configuration('api_key')
 
     def read_configuration(self, key: str) -> str:
@@ -32,22 +31,6 @@ class SendEmail(HttpUser):
         )
         return resp["Parameter"]["Value"]
 
-    # @task
-    # def send_email(self):
-    #     headers = {
-    #         'Authorization': f"Bearer {self._get_jwt().decode('utf-8')}"
-    #     }
-    #     payload = {
-    #         'template_id': self.template_id,
-    #         'email_address': 'test-email@not-a-real-email.com'
-    #     }
-    #     self.client.post(
-    #         '/v2/notifications/email',
-    #         json=payload,
-    #         headers=headers,
-    #         verify=os.getenv('REQUESTS_CA_BUNDLE')
-        # )
-
     def _get_jwt(self) -> bytes:
         header = {'typ': 'JWT', 'alg': 'HS256'}
         combo = {}
@@ -62,20 +45,3 @@ class SendEmail(HttpUser):
         combo.update(header)
         encoded_jwt = jwt.encode(combo, self.api_key, algorithm='HS256')
         return encoded_jwt
-
-    @task
-    def send_sms(self):
-        headers = {
-            'Authorization': f"Bearer {self._get_jwt().decode('utf-8')}"
-        }
-        payload = {
-            'template_id': self.sms_template_id,
-            'sms_sender_id': self.sms_sender_id,
-            'phone_number': '+16502532222'
-        }
-        self.client.post(
-            '/v2/notifications/sms',
-            json=payload,
-            headers=headers,
-            verify=os.getenv('REQUESTS_CA_BUNDLE')
-        )
