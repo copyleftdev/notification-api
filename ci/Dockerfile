@@ -1,4 +1,4 @@
-FROM python:3.6-alpine
+FROM python:3.7-alpine
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
