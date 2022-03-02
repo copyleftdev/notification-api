@@ -78,14 +78,14 @@ On OS X:
 
 `brew install pyenv`
 
-2. Install Python 3.6.10 (or whatever version is specified in .python-version)
+2. Install Python 3.7.12 (or whatever version is specified in .python-version)
 Then follow from instructions for rest of pyenv setup, [see step 3 here](https://github.com/pyenv/pyenv#basic-github-checkout)
 
-`pyenv install 3.6.10`
+`pyenv install 3.7.12`
 
-3. If you expect no conflicts, set `3.6.10` as you default
+3. If you expect no conflicts, set `3.7.12` as you default
 
-`pyenv global 3.6.10`
+`pyenv global 3.7.12`
 
 Note: 
 - if md5 hash issue, may be related to openssl version. `brew upgrade openssl && brew switch openssl`
@@ -120,12 +120,12 @@ Note:
 ```
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
-source  ~/.pyenv/versions/3.6.10/bin/virtualenvwrapper.sh
+source  ~/.pyenv/versions/3.7.12/bin/virtualenvwrapper.sh
 ```
 
 7. Restart your terminal and make your virtual environtment:
 
-`mkvirtualenv -p ~/.pyenv/versions/3.6.10/bin/python notification-api`
+`mkvirtualenv -p ~/.pyenv/versions/3.7.12/bin/python notification-api`
 
 8. You can now return to your environment any time by entering
 
@@ -600,5 +600,5 @@ Run the following command:
 ```
 CFLAGS="-I$(brew --prefix openssl)/include -I$(brew --prefix bzip2)/include -I$(brew --prefix readline)/include -I$(xcrun --show-sdk-path)/usr/include" \
 LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix readline)/lib -L$(brew --prefix zlib)/lib -L$(brew --prefix bzip2)/lib" \
-pyenv install --patch 3.6.10 < <(curl -sSL https://github.com/python/cpython/commit/8ea6353.patch\?full_index\=1)
+pyenv install --patch 3.7.12 < <(curl -sSL https://github.com/python/cpython/commit/8ea6353.patch\?full_index\=1)
 ```
